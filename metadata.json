@@ -1,0 +1,6 @@
+{
+  "name": "StickerCraft",
+  "description": "Crie, edite e exporte figurinhas para o WhatsApp com recorte automático por IA, editor completo e feed da comunidade.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
