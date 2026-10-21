@@ -90,9 +90,26 @@ class StickerContentProvider : ContentProvider() {
                 )
 
                 runBlocking {
-                    val packs = database.stickerDao().getUserPacks()
-                    // Get sync list for cursor
-                    // We can also query all packs
+                    val packs = database.stickerDao().getAllPacksSync()
+                    for (pack in packs) {
+                        cursor.addRow(
+                            arrayOf(
+                                pack.id,
+                                pack.name,
+                                pack.publisher,
+                                pack.trayImageFileName,
+                                "",
+                                "",
+                                "",
+                                "",
+                                "",
+                                "",
+                                "1",
+                                0,
+                                0
+                            )
+                        )
+                    }
                 }
                 cursor
             }

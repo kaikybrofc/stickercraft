@@ -22,16 +22,17 @@ class StickerRepository(
     private val fileManager: StickerFileManager
 ) {
 
-    val userPacks: Flow<List<StickerPack>> = stickerDao.getUserPacks().map { entities ->
-        entities.map { entity -> mapPackEntityToDomain(entity) }
+    val userPacks: Flow<List<StickerPack>> = stickerDao.getUserPacksWithStickers().map { relations ->
+        relations.map { relation -> mapRelationToDomain(relation) }
     }.flowOn(Dispatchers.IO)
 
-    val communityPacks: Flow<List<StickerPack>> = stickerDao.getCommunityPacks().map { entities ->
-        entities.map { entity -> mapPackEntityToDomain(entity) }
+    val communityPacks: Flow<List<StickerPack>> = stickerDao.getCommunityPacksWithStickers().map { relations ->
+        relations.map { relation -> mapRelationToDomain(relation) }
     }.flowOn(Dispatchers.IO)
 
-    private suspend fun mapPackEntityToDomain(entity: StickerPackEntity): StickerPack {
-        val stickers = stickerDao.getStickersForPackSync(entity.id).map { stickerEntity ->
+    private fun mapRelationToDomain(relation: com.example.data.local.StickerPackWithStickers): StickerPack {
+        val entity = relation.pack
+        val stickers = relation.stickers.map { stickerEntity ->
             Sticker(
                 id = stickerEntity.id,
                 packId = stickerEntity.packId,
@@ -57,8 +58,8 @@ class StickerRepository(
     }
 
     suspend fun getPackById(packId: String): StickerPack? = withContext(Dispatchers.IO) {
-        val entity = stickerDao.getPackById(packId) ?: return@withContext null
-        mapPackEntityToDomain(entity)
+        val relation = stickerDao.getPackWithStickersById(packId) ?: return@withContext null
+        mapRelationToDomain(relation)
     }
 
     suspend fun createPack(

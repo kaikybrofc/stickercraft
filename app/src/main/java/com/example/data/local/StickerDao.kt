@@ -22,6 +22,25 @@ interface StickerDao {
     @Query("SELECT * FROM sticker_packs WHERE id = :packId LIMIT 1")
     suspend fun getPackById(packId: String): StickerPackEntity?
 
+    @Query("SELECT * FROM sticker_packs")
+    suspend fun getAllPacksSync(): List<StickerPackEntity>
+
+    @Transaction
+    @Query("SELECT * FROM sticker_packs ORDER BY createdAtMillis DESC")
+    fun getPacksWithStickers(): Flow<List<StickerPackWithStickers>>
+
+    @Transaction
+    @Query("SELECT * FROM sticker_packs WHERE isUserCreated = 1 ORDER BY createdAtMillis DESC")
+    fun getUserPacksWithStickers(): Flow<List<StickerPackWithStickers>>
+
+    @Transaction
+    @Query("SELECT * FROM sticker_packs WHERE isUserCreated = 0 ORDER BY downloadsCount DESC")
+    fun getCommunityPacksWithStickers(): Flow<List<StickerPackWithStickers>>
+
+    @Transaction
+    @Query("SELECT * FROM sticker_packs WHERE id = :packId LIMIT 1")
+    suspend fun getPackWithStickersById(packId: String): StickerPackWithStickers?
+
     @Query("SELECT * FROM stickers WHERE packId = :packId ORDER BY orderIndex ASC")
     fun getStickersForPack(packId: String): Flow<List<StickerEntity>>
 
